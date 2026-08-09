@@ -34,7 +34,7 @@ import { registerRealtime } from "./modules/realtime/realtime.gateway.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({
-    logger: logger as any,
+    loggerInstance: logger as any,
     trustProxy: true,
   }).withTypeProvider<ZodTypeProvider>();
 
