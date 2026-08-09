@@ -12,12 +12,26 @@ export async function registerRealtime(app: FastifyInstance) {
     path: "/socket.io",
     cors: { origin: corsOrigins, credentials: true },
   });
-  const pubClient = getRedis();
-  const subClient = pubClient.duplicate();
-  io.adapter(createAdapter(pubClient, subClient));
+
+  
+  // Defer Redis adapter connection until first socket activity so a
+  // missing/unreachable REDIS_URL at startup does not crash the server.
+  let adapterAttached = false;
+  function ensureAdapter() {
+    if (adapterAttached) return;
+    adapterAttached = true;
+    const pubClient = getRedis();
+    const subClient = pubClient.duplicate();
+    io.adapter(createAdapter(pubClient, subClient));
+  }
 
   const namespace = io.of("/realtime");
   namespace.use((socket, next) => {
+    ensureAdapter();
+    return next();
+  });
+  namespace.use((socket, next) => {
+    // auth check (adapter already ensured above)
     const token = socket.handshake.auth.token;
     if (!token || typeof token !== "string") return next(new Error("UNAUTHORIZED"));
     verifyToken(token, { secretKey: env.CLERK_SECRET_KEY, jwtKey: env.CLERK_JWT_KEY })
