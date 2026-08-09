@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ClerkProvider } from "@clerk/react";
 import {
   Outlet,
   Link,
@@ -134,12 +135,20 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
-  return (
+  const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
+  const app = (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster />
     </QueryClientProvider>
+  );
+
+  if (!clerkPublishableKey) return app;
+
+  return (
+    <ClerkProvider publishableKey={clerkPublishableKey} signInUrl="/login" signUpUrl="/login">
+      {app}
+    </ClerkProvider>
   );
 }

@@ -1,10 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { SignIn, useAuth } from "@clerk/react";
+import { useEffect } from "react";
 import { Button } from "@/common/components/button";
-import { Input } from "@/common/components/input";
-import { Label } from "@/common/components/label";
 import { Panel } from "@/shared/primitives";
-import { currentUser } from "@/data/campus";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -23,6 +21,14 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { isLoaded, isSignedIn } = useAuth();
+  const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      navigate({ to: "/dashboard" });
+    }
+  }, [isLoaded, isSignedIn, navigate]);
 
   return (
     <div className="relative grid min-h-dvh lg:grid-cols-2">
@@ -61,39 +67,15 @@ function LoginPage() {
         <Panel className="w-full max-w-sm p-7">
           <h2 className="text-lg font-medium tracking-tight">Sign in to CampusOS</h2>
           <p className="text-meta mt-1.5">Use your campus credentials to continue.</p>
-          <form
-            className="mt-6 space-y-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              navigate({ to: "/dashboard" });
-            }}
-          >
-            <div>
-              <Label htmlFor="email" className="text-xs">
-                Campus email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                defaultValue={currentUser.email}
-                className="bg-surface-2 mt-1.5"
-              />
-            </div>
-            <div>
-              <Label htmlFor="password" className="text-xs">
-                Password
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                defaultValue="campusos"
-                className="bg-surface-2 mt-1.5"
-              />
-            </div>
-            <Button type="submit" className="w-full">
-              Continue <ArrowRight className="size-4" aria-hidden />
-            </Button>
-          </form>
+          <div className="mt-6">
+            {clerkPublishableKey ? (
+              <SignIn routing="path" path="/login" signUpUrl="/login" fallbackRedirectUrl="/dashboard" />
+            ) : (
+              <Button className="w-full" onClick={() => navigate({ to: "/dashboard" })}>
+                Continue demo
+              </Button>
+            )}
+          </div>
           <p className="text-meta mt-6">
             Exploring the demo?{" "}
             <Link to="/" className="text-primary hover:underline">

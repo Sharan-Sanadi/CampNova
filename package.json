@@ -1,6 +1,10 @@
 {
   "name": "tanstack_start_ts",
   "private": true,
+  "workspaces": [
+    "apps/api",
+    "packages/shared-types"
+  ],
   "sideEffects": false,
   "type": "module",
   "scripts": {
@@ -9,9 +13,19 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "api:dev": "npm --workspace @campus-os/api run dev",
+    "api:build": "npm --workspace @campus-os/shared-types run build && npm --workspace @campus-os/api run build",
+    "api:start": "npm --workspace @campus-os/api run start",
+    "seed": "npm --workspace @campus-os/api run seed",
+    "db:reset": "npm --workspace @campus-os/api run db:reset",
+    "migrate:up": "migrate-mongo up",
+    "test": "npm --workspace @campus-os/api run test"
   },
   "dependencies": {
+    "@clerk/fastify": "^3.1.62",
+    "@clerk/react": "^6.13.1",
+    "@formspree/react": "^3.0.0",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -70,7 +84,7 @@
     "tw-animate-css": "^1.3.4",
     "vaul": "^1.1.2",
     "vite-tsconfig-paths": "^6.0.2",
-    "zod": "^3.24.2",
+    "zod": "^4.2.0",
     "zustand": "^5.0.14"
   },
   "devDependencies": {

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useForm, ValidationError } from "@formspree/react";
 import { useState } from "react";
 import { Mail, MapPin } from "lucide-react";
 import { toast } from "sonner";
@@ -8,7 +9,7 @@ import { Textarea } from "@/common/components/textarea";
 import { Label } from "@/common/components/label";
 import { Panel } from "@/shared/primitives";
 
-const title = "Contact CampusOS AI — Talk to the team";
+const title = "Contact CampusOS AI - Talk to the team";
 const description =
   "Get in touch about deploying CampusOS AI on your campus, integrating existing timetabling data, or seeing the Copilot on your own resources.";
 
@@ -26,6 +27,10 @@ export const Route = createFileRoute("/_site/contact")({
 
 function ContactPage() {
   const [sent, setSent] = useState(false);
+  const formId = import.meta.env.VITE_FORMSPREE_FORM_ID as string | undefined;
+  const [state, handleSubmit] = useForm(formId ?? "campusos-disabled");
+
+  const showSuccess = sent || state.succeeded;
 
   return (
     <div className="mx-auto grid w-full max-w-[1000px] gap-12 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[0.9fr_1.1fr]">
@@ -56,11 +61,11 @@ function ContactPage() {
       </div>
 
       <Panel className="p-6">
-        {sent ? (
+        {showSuccess ? (
           <div className="py-6">
-            <p className="text-sm font-medium">Message received</p>
+            <p className="text-sm font-medium">Message sent successfully.</p>
             <p className="text-muted-foreground mt-2 text-[13px] leading-relaxed">
-              Thanks — we'll come back to you within two working days.
+              Thanks - we'll come back to you within two working days.
             </p>
             <Button variant="outline" size="sm" className="mt-6" onClick={() => setSent(false)}>
               Send another
@@ -69,37 +74,65 @@ function ContactPage() {
         ) : (
           <form
             className="space-y-4"
-            onSubmit={(e) => {
-              e.preventDefault();
+            onSubmit={async (event) => {
+              if (!formId) {
+                event.preventDefault();
+                toast.error("Something went wrong. Please try again.");
+                return;
+              }
+
+              await handleSubmit(event);
               setSent(true);
-              toast.success("Message sent", { description: "We'll be in touch shortly." });
+              toast.success("Message sent successfully.");
             }}
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" required placeholder="Jordan Reyes" />
+                <Input id="name" name="name" required placeholder="Jordan Reyes" disabled={state.submitting} />
+                <ValidationError prefix="Name" field="name" errors={state.errors} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="institution">Institution</Label>
-                <Input id="institution" required placeholder="Northgate University" />
+                <Label htmlFor="subject">Subject</Label>
+                <Input
+                  id="subject"
+                  name="subject"
+                  required
+                  placeholder="Campus deployment"
+                  disabled={state.submitting}
+                />
+                <ValidationError prefix="Subject" field="subject" errors={state.errors} />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Work email</Label>
-              <Input id="email" type="email" required placeholder="you@university.edu" />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="you@university.edu"
+                disabled={state.submitting}
+              />
+              <ValidationError prefix="Email" field="email" errors={state.errors} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="message">What are you trying to solve?</Label>
               <Textarea
                 id="message"
+                name="message"
                 required
                 rows={5}
-                placeholder="We manage 40 teaching spaces across three buildings and lose hours a week to scheduling conflicts…"
+                disabled={state.submitting}
+                placeholder="We manage 40 teaching spaces across three buildings and lose hours a week to scheduling conflicts..."
               />
+              <ValidationError prefix="Message" field="message" errors={state.errors} />
             </div>
-            <Button type="submit" className="w-full">
-              Send message
+            {state.errors ? (
+              <p className="text-destructive text-[13px]">Something went wrong. Please try again.</p>
+            ) : null}
+            <Button type="submit" className="w-full" disabled={state.submitting || !formId}>
+              {state.submitting ? "Sending..." : "Send message"}
             </Button>
           </form>
         )}
