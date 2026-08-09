@@ -29,7 +29,7 @@ const envSchema = z
     IMPORT_BATCH_SIZE: z.coerce.number().int().positive().default(500),
     DATASET_RETENTION_DAYS: z.coerce.number().int().positive().default(30),
     ENABLE_XLSX_IMPORT: z.coerce.boolean().default(false),
-    COPILOT_PROVIDER: z.enum(["ollama", "anthropic"]).default("ollama"),
+    COPILOT_PROVIDER: z.enum(["ollama", "anthropic", "groq"]).default("ollama"),
     OLLAMA_BASE_URL: z.string().url().default("http://localhost:11434"),
     OLLAMA_MODEL: z.string().default("llama3.1:8b"),
     ANTHROPIC_API_KEY: z.string().optional(),
