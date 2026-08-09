@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
+import type { Model, Schema as SchemaType, Types } from "mongoose";
 const { Schema, model } = mongoose;
 const models = mongoose.models;
-type Model<T> = mongoose.Model<T>;
-type Types = typeof mongoose.Types;
 
 
 import {
@@ -31,7 +30,7 @@ const datasetImportStatuses = [
   "ROLLED_BACK",
 ] as const;
 
-function withExternalId(schema: Schema): Schema {
+function withExternalId(schema: SchemaType): SchemaType {
   schema.add({
     externalId: { type: String, required: true, unique: true, index: true },
   });
@@ -517,5 +516,5 @@ export const Campus = (models.Campus as Model<any>) || model("Campus", CampusSch
 export const DatasetImport =
   (models.DatasetImport as Model<any>) || model("DatasetImport", DatasetImportSchema);
 
-export type MongoId = Types.ObjectId;
+export type MongoId = mongoose.Types.ObjectId;
 export type DatasetImportStatus = (typeof datasetImportStatuses)[number];
