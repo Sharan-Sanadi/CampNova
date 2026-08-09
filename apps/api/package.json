@@ -5,8 +5,10 @@
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "npm --workspace @campus-os/shared-types run build && tsx watch src/server.ts",
-    "build": "tsc",
+    "dev": "npm run build:shared && tsx watch src/server.ts",
+    "build:shared": "npm --prefix ../../packages/shared-types run build",
+    "build": "npm run build:shared && tsc",
+    "prestart": "npm run build",
     "start": "node dist/server.js",
     "seed": "tsx scripts/seed.ts",
     "db:reset": "tsx scripts/db-reset.ts",

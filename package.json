@@ -15,7 +15,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "api:dev": "npm --workspace @campus-os/api run dev",
-    "api:build": "npm --workspace @campus-os/shared-types run build && npm --workspace @campus-os/api run build",
+    "api:build": "npm --workspace @campus-os/api run build",
     "api:start": "npm --workspace @campus-os/api run start",
     "start": "npm run api:start",
     "start:ssr": "node .output/server/index.mjs",
