@@ -148,10 +148,14 @@ npm run build
 
 ---
 
-## 👤 Author & Contact
+## 👤 Authors & Contributors
 
 **Sharan Sanadi**  
 - **GitHub**: [@Sharan-Sanadi](https://github.com/Sharan-Sanadi)  
+
+**Omkar Biradarpatil**  
+- **GitHub**: [@OmkarBiradarpatil](https://github.com/OmkarBiradarpatil)  
+
 - **Repository**: [CampNova Project](https://github.com/Sharan-Sanadi/CampNova)
 
 ---
