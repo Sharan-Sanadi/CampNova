@@ -39,7 +39,7 @@ function withExternalId(schema: SchemaType): SchemaType {
 
 export const UserSchema = new Schema(
   {
-    clerkUserId: { type: String, required: true, unique: true, index: true },
+    clerkUserId: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     name: { type: String, required: true },
     role: { type: String, enum: userRoles, required: true, default: "STUDENT" },
@@ -49,8 +49,7 @@ export const UserSchema = new Schema(
   },
   { timestamps: true },
 );
-UserSchema.index({ clerkUserId: 1 }, { unique: true });
-UserSchema.index({ email: 1 }, { unique: true });
+// clerkUserId and email indexes are created automatically via unique:true in the schema
 
 export const BuildingSchema = withExternalId(
   new Schema(
@@ -214,7 +213,7 @@ export const ActivityEventSchema = withExternalId(
       message: { type: String, required: true },
       detail: { type: String, required: true },
       time: { type: String, required: true },
-      createdAt: { type: Date, required: true, default: () => new Date(), index: true },
+      createdAt: { type: Date, required: true, default: () => new Date() },
     },
     { timestamps: false },
   ),
@@ -236,7 +235,7 @@ export const NotificationSchema = withExternalId(
       unread: { type: Boolean, required: true, default: true, index: true },
       actionLabel: { type: String, required: true },
       actionTo: { type: String, required: true },
-      createdAt: { type: Date, required: true, default: () => new Date(), index: true },
+      createdAt: { type: Date, required: true, default: () => new Date() },
     },
     { timestamps: false },
   ),
