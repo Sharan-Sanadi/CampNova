@@ -1,0 +1,77 @@
+
+##############################################################
+# render.yaml — CampusOS / CampNova Render deployment config
+#
+# Doc: https://render.com/docs/blueprint-spec
+# Commit this file; Render reads it automatically.
+##############################################################
+
+services:
+  - type: web
+    name: campnova-api
+    runtime: node
+    plan: free
+
+    # ── Build ──────────────────────────────────────────────
+    # Root of the repo is the workspace root (monorepo).
+    # "npm run build" runs:  api:build (tsc) then vite build
+    buildCommand: npm ci && npm run build
+
+    # ── Start ──────────────────────────────────────────────
+    # Runs: npm --workspace @campus-os/api run start
+    #   which runs: node dist/server.js  (inside apps/api)
+    startCommand: npm start
+
+    # ── Runtime ────────────────────────────────────────────
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      # ── Required — set values in Render dashboard ───────
+      - key: MONGO_URI
+        sync: false          # secret: set manually in dashboard
+
+      - key: REDIS_URL
+        sync: false          # secret: set manually in dashboard
+
+      - key: CLERK_SECRET_KEY
+        sync: false
+
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false
+
+      - key: COOKIE_SECRET
+        generateValue: true  # Render auto-generates a secure random value
+
+      # ── Optional — sensible defaults ────────────────────
+      - key: HOST
+        value: 0.0.0.0
+
+      - key: LOG_LEVEL
+        value: info
+
+      - key: CORS_ORIGINS
+        value: https://campnova.onrender.com
+
+      - key: CAMPUS_TIMEZONE
+        value: Asia/Kolkata
+
+      - key: DEFAULT_CAMPUS_ID
+        value: demo-campus
+
+      - key: DEFAULT_CAMPUS_NAME
+        value: Demo Campus
+
+      - key: COPILOT_PROVIDER
+        value: ollama
+
+      - key: DATA_MODE
+        value: production
+
+      - key: MEILI_HOST
+        value: http://localhost:7700
+
+      - key: MEILI_MASTER_KEY
+        value: campusos-dev-meili-key
+
+    healthCheckPath: /health
