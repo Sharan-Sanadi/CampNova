@@ -29,12 +29,25 @@ mongoose.set("toObject", {
   },
 });
 
-export async function connectMongo(uri = env.MONGO_URI): Promise<typeof mongoose> {
+export async function connectMongo(uri = env.MONGO_URI, retries = 3): Promise<typeof mongoose> {
   if (mongoose.connection.readyState === 1) return mongoose;
-  await mongoose.connect(uri, {
-    autoIndex: env.NODE_ENV !== "production",
-  });
-  logger.info({ db: mongoose.connection.name }, "mongo connected");
+  let attempt = 0;
+  while (attempt < retries) {
+    try {
+      attempt++;
+      await mongoose.connect(uri, {
+        autoIndex: env.NODE_ENV !== "production",
+        family: 4,
+        serverSelectionTimeoutMS: 10000,
+      });
+      logger.info({ db: mongoose.connection.name }, "mongo connected");
+      return mongoose;
+    } catch (err) {
+      logger.warn({ err, attempt, retries }, "mongo connection attempt failed");
+      if (attempt >= retries) throw err;
+      await new Promise((res) => setTimeout(res, 2000));
+    }
+  }
   return mongoose;
 }
 
