@@ -28,6 +28,11 @@ export function registerErrorHandler(app: FastifyInstance) {
         return sendError(reply, new AppError(429, "RATE_LIMITED", "Rate limit exceeded"));
       }
 
+      // Clerk handshake / token verification errors — stale cookies, key rotation
+      if (error.message?.includes("Clerk:") && error.message?.includes("verification failed")) {
+        return sendError(reply, new AppError(401, "UNAUTHORIZED", "Authentication failed. Please clear cookies and sign in again."));
+      }
+
       app.log.error({ err: error }, "unhandled request error");
       return sendError(reply, new AppError(500, "INTERNAL_ERROR", "Internal server error"));
     },

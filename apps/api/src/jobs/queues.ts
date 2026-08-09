@@ -18,16 +18,20 @@ type QueueMap = {
 
 let _queueMap: QueueMap | null = null;
 
+// Render free Redis uses allkeys-lru eviction policy; BullMQ warns about this
+// on every Queue/Worker instantiation. skipVersionCheck suppresses the check.
+const QUEUE_OPTS = { skipVersionCheck: true } as const;
+
 function getQueueMap(): QueueMap {
   if (!_queueMap) {
     const conn = getRedis();
     _queueMap = {
-      utilization:        new Queue("utilization",         { connection: conn }),
-      anomalyDetection:   new Queue("anomaly-detection",   { connection: conn }),
-      bookingExpiry:      new Queue("booking-expiry",      { connection: conn }),
-      notificationDigest: new Queue("notification-digest", { connection: conn }),
-      datasetProcess:     new Queue("dataset-process",     { connection: conn }),
-      datasetCommit:      new Queue("dataset-commit",      { connection: conn }),
+      utilization:        new Queue("utilization",         { connection: conn, ...QUEUE_OPTS }),
+      anomalyDetection:   new Queue("anomaly-detection",   { connection: conn, ...QUEUE_OPTS }),
+      bookingExpiry:      new Queue("booking-expiry",      { connection: conn, ...QUEUE_OPTS }),
+      notificationDigest: new Queue("notification-digest", { connection: conn, ...QUEUE_OPTS }),
+      datasetProcess:     new Queue("dataset-process",     { connection: conn, ...QUEUE_OPTS }),
+      datasetCommit:      new Queue("dataset-commit",      { connection: conn, ...QUEUE_OPTS }),
     };
   }
   return _queueMap;
@@ -60,25 +64,25 @@ export function startWorkers() {
     new Worker(
       "utilization",
       async () => { logger.info("utilization recomputation job completed"); },
-      { connection: conn },
+      { connection: conn, ...QUEUE_OPTS },
     ),
     new Worker(
       "anomaly-detection",
       async () => { logger.info("anomaly sweep job completed"); },
-      { connection: conn },
+      { connection: conn, ...QUEUE_OPTS },
     ),
     new Worker(
       "booking-expiry",
       async () => { logger.info("booking expiry sweep job completed"); },
-      { connection: conn },
+      { connection: conn, ...QUEUE_OPTS },
     ),
     new Worker(
       "notification-digest",
       async () => { logger.info("notification digest job completed"); },
-      { connection: conn },
+      { connection: conn, ...QUEUE_OPTS },
     ),
-    new Worker("dataset-process", processDatasetJob, { connection: conn, concurrency: 2 }),
-    new Worker("dataset-commit",  commitDatasetJob,  { connection: conn, concurrency: 1 }),
+    new Worker("dataset-process", processDatasetJob, { connection: conn, concurrency: 2, ...QUEUE_OPTS }),
+    new Worker("dataset-commit",  commitDatasetJob,  { connection: conn, concurrency: 1, ...QUEUE_OPTS }),
   ];
 }
 
