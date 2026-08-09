@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AlertTriangle, CalendarPlus, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/button";
 import { toast } from "sonner";
 import {
   EmptyState,
@@ -11,20 +11,20 @@ import {
   StatusPill,
   Tag,
   statusTone,
-} from "@/components/campusos/ui/primitives";
+} from "@/shared/primitives";
 import {
   BookingCard,
   PressureMeter,
   RecommendationRow,
   SignalRow,
-} from "@/components/campusos/bookings/pieces";
-import { ScheduleBoard } from "@/components/campusos/bookings/ScheduleBoard";
-import { SmartBookingSearch } from "@/components/campusos/bookings/SmartBookingSearch";
+} from "@/features/bookings/components/pieces";
+import { ScheduleBoard } from "@/features/bookings/components/ScheduleBoard";
+import { SmartBookingSearch } from "@/features/bookings/components/SmartBookingSearch";
 import {
   BookingComposer,
   type ComposerSeed,
-} from "@/components/campusos/bookings/BookingComposer";
-import { useCampusVersion } from "@/lib/useCampus";
+} from "@/features/bookings/components/BookingComposer";
+import { useCampusVersion } from "@/common/lib/useCampus";
 import {
   approvalAssessment,
   bookingInsights,

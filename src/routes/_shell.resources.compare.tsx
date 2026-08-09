@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/button";
 import {
   EmptyState,
   PageHeader,
@@ -9,8 +9,8 @@ import {
   Tag,
   UtilizationBar,
   statusTone,
-} from "@/components/campusos/ui/primitives";
-import { MatchScore } from "@/components/campusos/resources/intelligence";
+} from "@/shared/primitives";
+import { MatchScore } from "@/features/resources/components/intelligence";
 import {
   getResourceProfile,
   parseResourceQuery,

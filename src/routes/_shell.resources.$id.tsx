@@ -18,9 +18,9 @@ import {
   Video,
   Wifi,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/button";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn } from "@/common/lib/utils";
 import {
   EmptyState,
   Panel,
@@ -31,8 +31,8 @@ import {
   Tag,
   UtilizationBar,
   statusTone,
-} from "@/components/campusos/ui/primitives";
-import { AvailabilityTimeline } from "@/components/campusos/resources/AvailabilityTimeline";
+} from "@/shared/primitives";
+import { AvailabilityTimeline } from "@/features/resources/components/AvailabilityTimeline";
 import {
   AskCampusOS,
   DemandBars,
@@ -40,8 +40,8 @@ import {
   InsightRow,
   LocationPanel,
   MatchScore,
-} from "@/components/campusos/resources/intelligence";
-import { ReserveDialog, type ReservePrefill } from "@/components/campusos/resources/ReserveDialog";
+} from "@/features/resources/components/intelligence";
+import { ReserveDialog, type ReservePrefill } from "@/features/resources/components/ReserveDialog";
 import {
   alternativeRationale,
   findAlternatives,

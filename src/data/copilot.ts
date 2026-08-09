@@ -12,7 +12,7 @@
 
 import { getBookings, getInsights, getResource, getResources, campusHealth } from "./campus";
 import type { Resource } from "./campus";
-import type { Tone } from "@/components/campusos/ui/primitives";
+import type { Tone } from "@/shared/primitives";
 
 export type CopilotIntent =
   | "find-resource"

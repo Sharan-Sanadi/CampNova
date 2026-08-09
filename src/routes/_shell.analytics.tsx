@@ -18,7 +18,7 @@ import {
   Panel,
   SectionHeading,
   UtilizationBar,
-} from "@/components/campusos/ui/primitives";
+} from "@/shared/primitives";
 import {
   conflictSeries,
   getResources,

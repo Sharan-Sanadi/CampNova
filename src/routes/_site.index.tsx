@@ -8,7 +8,7 @@ import {
   Hero,
   ValueShift,
   Workflow,
-} from "@/components/campusos/site/sections";
+} from "@/marketing/components/sections";
 import { ImmersiveCampus } from "@/experience/ImmersiveCampus";
 
 const title = "CampusOS AI — The Intelligence Layer for the Autonomous Campus";

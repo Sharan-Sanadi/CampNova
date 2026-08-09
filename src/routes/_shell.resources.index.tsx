@@ -15,23 +15,23 @@ import {
   SectionHeading,
   StatusPill,
   Tag,
-} from "@/components/campusos/ui/primitives";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Slider } from "@/components/ui/slider";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/shared/primitives";
+import { Input } from "@/common/components/input";
+import { Button } from "@/common/components/button";
+import { Checkbox } from "@/common/components/checkbox";
+import { Slider } from "@/common/components/slider";
+import { Popover, PopoverContent, PopoverTrigger } from "@/common/components/popover";
+import { Skeleton } from "@/common/components/skeleton";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { ResourceResultCard } from "@/components/campusos/resources/ResourceResultCard";
-import { AskCampusOS, MatchReasons, MatchScore } from "@/components/campusos/resources/intelligence";
-import { ReserveDialog } from "@/components/campusos/resources/ReserveDialog";
+} from "@/common/components/select";
+import { ResourceResultCard } from "@/features/resources/components/ResourceResultCard";
+import { AskCampusOS, MatchReasons, MatchScore } from "@/features/resources/components/intelligence";
+import { ReserveDialog } from "@/features/resources/components/ReserveDialog";
 import {
   EQUIPMENT_OPTIONS,
   buildings,

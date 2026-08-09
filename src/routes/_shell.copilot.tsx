@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CopilotShell } from "@/components/campusos/copilot/CopilotShell";
+import { CopilotShell } from "@/features/copilot/components/CopilotShell";
 
 export const Route = createFileRoute("/_shell/copilot")({
   validateSearch: (search: Record<string, unknown>): { q?: string | undefined } => ({

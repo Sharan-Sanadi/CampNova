@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Panel } from "@/components/campusos/ui/primitives";
+import { Button } from "@/common/components/button";
+import { Input } from "@/common/components/input";
+import { Label } from "@/common/components/label";
+import { Panel } from "@/shared/primitives";
 import { currentUser } from "@/data/campus";
 
 export const Route = createFileRoute("/login")({

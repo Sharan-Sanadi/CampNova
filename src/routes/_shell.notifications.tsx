@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/button";
 import {
   EmptyState,
   PageHeader,
   Panel,
   StatusPill,
-} from "@/components/campusos/ui/primitives";
+} from "@/shared/primitives";
 import { getNotifications, type NotificationItem } from "@/data/campus";
 
 export const Route = createFileRoute("/_shell/notifications")({

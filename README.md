@@ -11,7 +11,7 @@ Modern higher-education campuses manage hundreds of facilities, thousands of hou
 
 **CampusOS AI** bridges this gap by serving as a central intelligence layer. It analyzes resource availability in real time, predicts scheduling pressure before conflicts happen, and enables natural-language facility management through an interactive **AI Copilot**.
 
-Designed with **enterprise SaaS aesthetics**, **production-grade state management**, and a **custom GPU-accelerated WebGL spatial interface**, CampusOS AI demonstrates modern full-stack web engineering best practices.
+Designed with **enterprise SaaS aesthetics**, **Microsoft-level modular architecture**, **production-grade state management**, and a **custom GPU-accelerated WebGL spatial interface**, CampusOS AI demonstrates modern full-stack web engineering best practices.
 
 ---
 
@@ -61,6 +61,7 @@ CampusOS AI features a custom **Three.js / React Three Fiber spatial layer** mou
 |-------|------------|---------------------------|
 | **Framework** | **TanStack Start (Vite 8)** | SSR-ready, type-safe file routing, and zero-waterfall data loading |
 | **Language** | **TypeScript 5.8 (Strict)** | End-to-end type safety across route context, mock schemas, and components |
+| **Architecture** | **Microsoft-level Feature Modules** | Clear separation of concerns, barrel exports, shared common infrastructure |
 | **UI & Styling** | **TailwindCSS v4 + Radix UI** | High-density enterprise SaaS layout tokens with full dark-mode optimization |
 | **3D & Visuals** | **Three.js + R3F + GSAP** | High-performance GPU particle fields and smooth camera rigs |
 | **State Management** | **Zustand + `useSyncExternalStore`** | Immutable reactive state subscription with zero un-needed re-renders |
@@ -74,30 +75,32 @@ CampusOS AI features a custom **Three.js / React Three Fiber spatial layer** mou
 CAMPNOVA/
 ├── public/                 # Static assets & favicon
 ├── src/
-│   ├── components/         # Modular UI & Feature Components
-│   │   ├── campusos/
-│   │   │   ├── bookings/   # Smart booking forms & schedule boards
-│   │   │   ├── copilot/    # AI reasoning trace & candidate cards
-│   │   │   ├── dashboard/  # Command center widgets & live feeds
-│   │   │   ├── intelligence/# Signal feeds & prediction cards
-│   │   │   ├── layout/     # AppShell, brand sidebar, theme toggle
-│   │   │   ├── resources/  # Resource cards & reserve dialogs
-│   │   │   └── spatial/    # 3D spatial layer primitives
-│   │   └── ui/             # Radix UI primitives & Shadcn design tokens
-│   ├── data/               # Business Logic, Rules & Intelligence Engines
-│   │   ├── bookingEngine.ts# Conflict detection & 5-rule validation logic
-│   │   ├── campus.ts       # Central campus state & reactive store
-│   │   ├── copilot.ts      # Natural language query parsing engine
-│   │   ├── intelligence.ts # Anomaly detection & prediction models
-│   │   └── resources.ts    # Resource fleet matching & scoring
-│   ├── experience/         # 3D WebGL Spatial Layer (Three.js / R3F)
+│   ├── app/                # Application bootstrap & entry configurations (router, server, start)
+│   ├── common/             # Cross-cutting infrastructure & shared design primitives
+│   │   ├── components/     # UI primitives (Radix UI / Shadcn components)
+│   │   ├── constants/      # App-wide constants, breakpoints, & motion tokens
+│   │   ├── hooks/          # Shared custom hooks (e.g., use-mobile)
+│   │   ├── lib/            # Utilities, theme bootstrap, error boundaries
+│   │   └── types/          # Centralized type exports barrel
+│   ├── features/           # Modular domain features (self-contained components & services)
+│   │   ├── bookings/       # Smart booking forms, schedule boards, & services
+│   │   ├── copilot/        # AI reasoning trace, recommendation cards, & services
+│   │   ├── dashboard/      # Command center widgets, live activity feeds, & services
+│   │   ├── intelligence/   # Campus intelligence signals, predictions, & services
+│   │   ├── resources/      # Resource cards, reserve dialogs, & availability timelines
+│   │   └── spatial/        # Digital twin controls & spatial primitives
+│   ├── experience/         # 3D WebGL Spatial Layer (Three.js / React Three Fiber)
 │   │   ├── components/     # Camera rigs, data pathways, particle fields
 │   │   ├── shaders/        # Custom GLSL procedural shaders
 │   │   ├── spatial/        # Multi-layer spatial stage architecture
 │   │   └── store.ts        # Quality tier detection & spatial state
-│   ├── lib/                # Shared utilities, theme bootstrap & store hooks
-│   ├── routes/             # TanStack Start File-Based Route Tree
-│   └── styles.css          # Core CSS variables & design tokens
+│   ├── layout/             # Top bar, brand sidebar, theme toggle, & AppShell
+│   ├── marketing/          # Public landing site components, header, & footer
+│   ├── routes/             # TanStack Start file-based route tree
+│   ├── shared/             # CampusOS core design system primitives
+│   ├── routeTree.gen.ts    # Auto-generated TanStack Router tree
+│   └── styles.css          # Design tokens & core CSS variables
+├── CampusOs-finalog.zip    # Preserved version archive
 ├── README.md               # Project documentation
 ├── package.json            # Dependencies & scripts
 └── vite.config.ts          # Vite & TanStack Start build configuration
@@ -122,7 +125,7 @@ npm install
 ```bash
 npm run dev
 ```
-Open **`http://localhost:5173`** (or the output port, e.g. `http://localhost:8082`) in your browser.
+Open **`http://localhost:8080`** in your browser.
 
 ### 3. Build & Type Check
 ```bash
@@ -137,10 +140,11 @@ npm run build
 
 ## 🛡️ Engineering Best Practices Implemented
 
+- ✅ **Microsoft-Grade Codebase Structure**: Domain-driven feature layout with explicit barrel exports and layer isolation.
 - ✅ **Strict Memory Leak Prevention**: Event listeners and animation timers cleaned up on component unmount.
 - ✅ **Zero Flash of Unstyled Theme**: Inline theme bootstrap script prevents light/dark mode flash during hydration.
 - ✅ **Component Decoupling**: Business logic and rule evaluations separated into modular service functions.
-- ✅ **Clean Code & Zero Lints**: Strict TypeScript compilation with clean AST output.
+- ✅ **Clean Code & Zero Lints**: Strict TypeScript compilation with zero errors.
 
 ---
 
@@ -151,4 +155,5 @@ npm run build
 - **Repository**: [CampNova Project](https://github.com/Sharan-Sanadi/CampNova)
 
 ---
+
 *Built with precision for scalable enterprise SaaS operations.*

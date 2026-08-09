@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
-import { useCampusVersion } from "@/lib/useCampus";
+import { Button } from "@/common/components/button";
+import { useCampusVersion } from "@/common/lib/useCampus";
 import {
   PageHeader,
   Panel,
   SectionHeading,
   StatusPill,
-} from "@/components/campusos/ui/primitives";
-import { CampusClock } from "@/components/campusos/layout/CampusClock";
+} from "@/shared/primitives";
+import { CampusClock } from "@/layout/CampusClock";
 import {
   AskCampusOS,
   CampusHealthPanel,
@@ -21,7 +21,7 @@ import {
   RiskList,
   SignalFeed,
   SignalMetric,
-} from "@/components/campusos/intelligence/pieces";
+} from "@/features/intelligence/components/pieces";
 import {
   INTEL_FILTERS,
   TIME_SCOPES,
@@ -38,7 +38,7 @@ import {
   type IntelFilter,
   type TimeScope,
 } from "@/data/intelligence";
-import { cn } from "@/lib/utils";
+import { cn } from "@/common/lib/utils";
 
 export const Route = createFileRoute("/_shell/intelligence")({
   head: () => ({

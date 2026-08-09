@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/common/components/button";
+import { Input } from "@/common/components/input";
+import { Label } from "@/common/components/label";
+import { Switch } from "@/common/components/switch";
+import { Separator } from "@/common/components/separator";
 import { toast } from "sonner";
-import { PageHeader, Panel, SectionHeading } from "@/components/campusos/ui/primitives";
+import { PageHeader, Panel, SectionHeading } from "@/shared/primitives";
 import { currentUser } from "@/data/campus";
 
 export const Route = createFileRoute("/_shell/settings")({

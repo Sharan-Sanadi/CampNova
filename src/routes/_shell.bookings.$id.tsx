@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { AlertTriangle, ArrowLeft, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/button";
 import { toast } from "sonner";
 import {
   EmptyState,
@@ -10,18 +10,18 @@ import {
   StatusPill,
   Tag,
   statusTone,
-} from "@/components/campusos/ui/primitives";
+} from "@/shared/primitives";
 import {
   BookingLifecycle,
   CheckList,
   MatchScore,
   RecommendationRow,
-} from "@/components/campusos/bookings/pieces";
+} from "@/features/bookings/components/pieces";
 import {
   BookingComposer,
   type ComposerSeed,
-} from "@/components/campusos/bookings/BookingComposer";
-import { useCampusVersion } from "@/lib/useCampus";
+} from "@/features/bookings/components/BookingComposer";
+import { useCampusVersion } from "@/common/lib/useCampus";
 import {
   approvalAssessment,
   cancelBooking,

@@ -2,11 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Mail, MapPin } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Panel } from "@/components/campusos/ui/primitives";
+import { Button } from "@/common/components/button";
+import { Input } from "@/common/components/input";
+import { Textarea } from "@/common/components/textarea";
+import { Label } from "@/common/components/label";
+import { Panel } from "@/shared/primitives";
 
 const title = "Contact CampusOS AI — Talk to the team";
 const description =

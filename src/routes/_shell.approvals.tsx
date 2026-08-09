@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/button";
 import { toast } from "sonner";
 import {
   EmptyState,
@@ -8,11 +8,11 @@ import {
   Panel,
   SectionHeading,
   StatusPill,
-} from "@/components/campusos/ui/primitives";
+} from "@/shared/primitives";
 import { getBookings, getPendingApprovals } from "@/data/campus";
 import { approvalAssessment, dayLabelFor, decideBooking } from "@/data/bookingEngine";
-import { Tag } from "@/components/campusos/ui/primitives";
-import { useCampusVersion } from "@/lib/useCampus";
+import { Tag } from "@/shared/primitives";
+import { useCampusVersion } from "@/common/lib/useCampus";
 
 export const Route = createFileRoute("/_shell/approvals")({
   head: () => ({

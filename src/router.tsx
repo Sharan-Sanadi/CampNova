@@ -1,21 +1,6 @@
-import { QueryClient } from "@tanstack/react-query";
-import { createRouter } from "@tanstack/react-router";
-import { routeTree } from "./routeTree.gen";
-
-let browserQueryClient: QueryClient | undefined;
-
-export const getRouter = () => {
-  const queryClient =
-    typeof window !== "undefined"
-      ? (browserQueryClient ??= new QueryClient())
-      : new QueryClient();
-
-  const router = createRouter({
-    routeTree,
-    context: { queryClient },
-    scrollRestoration: true,
-    defaultPreloadStaleTime: 0,
-  });
-
-  return router;
-};
+/**
+ * Re-export from the canonical location in `app/router.tsx`.
+ * This file exists because `routeTree.gen.ts` (auto-generated, not editable)
+ * expects `./router.tsx` to be a sibling in `src/`.
+ */
+export { getRouter } from "./app/router";

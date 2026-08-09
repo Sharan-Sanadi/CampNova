@@ -8,14 +8,14 @@ import {
   SectionHeading,
   StatusDot,
   StatusPill,
-} from "@/components/campusos/ui/primitives";
-import { InsightCallout } from "@/components/campusos/dashboard/InsightCallout";
-import { OperationsTimeline } from "@/components/campusos/dashboard/OperationsTimeline";
-import { LiveActivity } from "@/components/campusos/dashboard/LiveActivity";
-import { QuickActions } from "@/components/campusos/dashboard/QuickActions";
+} from "@/shared/primitives";
+import { InsightCallout } from "@/features/dashboard/components/InsightCallout";
+import { OperationsTimeline } from "@/features/dashboard/components/OperationsTimeline";
+import { LiveActivity } from "@/features/dashboard/components/LiveActivity";
+import { QuickActions } from "@/features/dashboard/components/QuickActions";
 import { currentUser } from "@/data/campus";
 import { livePulseMetrics } from "@/data/bookingEngine";
-import { useCampusVersion } from "@/lib/useCampus";
+import { useCampusVersion } from "@/common/lib/useCampus";
 
 export const Route = createFileRoute("/_shell/dashboard")({
   head: () => ({

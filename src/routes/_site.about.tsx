@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
-import { Panel } from "@/components/campusos/ui/primitives";
+import { Button } from "@/common/components/button";
+import { Panel } from "@/shared/primitives";
 
 const title = "About CampusOS AI — Building the autonomous campus";
 const description =
