@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { env } from "../../config/env.js";
 import { getRedis } from "../../db/redis.js";
-import { datasetCommitQueue, datasetProcessQueue } from "../../jobs/queues.js";
+import { getDatasetCommitQueue, getDatasetProcessQueue } from "../../jobs/queues.js";
 import { conflict, notFound, validation } from "../../shared/errors/AppError.js";
 import { requireRole } from "../../shared/middleware/auth.js";
 import { rollbackDatasetImport } from "./dataset.importer.js";
@@ -101,7 +101,7 @@ export async function datasetsRoutes(app: FastifyInstance) {
       mimeType: headerString(request.headers["content-type"]) ?? "application/octet-stream",
       buffer: body,
     });
-    await datasetProcessQueue.add("process", { datasetImportId: String(dataset._id) }, { attempts: 2, backoff: { type: "exponential", delay: 1000 } });
+    await getDatasetProcessQueue().add("process", { datasetImportId: String(dataset._id) }, { attempts: 2, backoff: { type: "exponential", delay: 1000 } });
     return reply.status(202).send(datasetStatusDto(dataset));
   });
 
@@ -147,7 +147,7 @@ export async function datasetsRoutes(app: FastifyInstance) {
     await acquireImportLock(request.user!.campusId);
     const { DatasetImport } = await import("../../db/models.js");
     await DatasetImport.findByIdAndUpdate(id, { $set: { status: "IMPORTING", importStrategy: body.strategy } });
-    await datasetCommitQueue.add("commit", { datasetImportId: id, options: body }, { attempts: 1 });
+    await getDatasetCommitQueue().add("commit", { datasetImportId: id, options: body }, { attempts: 1 });
     return reply.status(202).send({ id, status: "IMPORTING" });
   });
 
