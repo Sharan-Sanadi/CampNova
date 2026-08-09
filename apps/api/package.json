@@ -6,7 +6,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "npm --workspace @campus-os/shared-types run build && tsx watch src/server.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc",
     "start": "node dist/server.js",
     "seed": "tsx scripts/seed.ts",
     "db:reset": "tsx scripts/db-reset.ts",
