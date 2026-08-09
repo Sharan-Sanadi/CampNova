@@ -1,4 +1,9 @@
-import { Schema, model, models, type Model, type Types } from "mongoose";
+import mongoose from "mongoose";
+const { Schema, model } = mongoose;
+const models = mongoose.models;
+type Model<T> = mongoose.Model<T>;
+type Types = typeof mongoose.Types;
+
 
 import {
   bookingStatuses,
