@@ -12,7 +12,7 @@ import {
   type ZodTypeProvider,
 } from "@fastify/type-provider-zod";
 
-import { corsOrigins, env } from "./config/env.js";
+import { isCorsAllowed, env } from "./config/env.js";
 import { logger } from "./config/logger.js";
 import { isMongoReady } from "./db/mongoose.js";
 import { isRedisReady } from "./db/redis.js";
@@ -46,7 +46,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   await app.register(helmet);
   await app.register(cors, {
-    origin: corsOrigins,
+    origin: isCorsAllowed,
     credentials: true,
   });
   await app.register(cookie, { secret: env.COOKIE_SECRET });

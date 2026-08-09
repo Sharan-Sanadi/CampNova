@@ -62,3 +62,13 @@ export const env = envSchema.parse(process.env);
 export const corsOrigins = env.CORS_ORIGINS.split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
+
+/** Runtime CORS origin resolver — allows listed origins plus any *.vercel.app preview URL. */
+export function isCorsAllowed(origin: string | undefined): boolean {
+  if (!origin) return false;
+  if (corsOrigins.includes(origin)) return true;
+  // Allow all Vercel preview deployments (*.vercel.app) so PRs aren't blocked.
+  // Remove this line once you have a stable production domain.
+  if (origin.endsWith(".vercel.app")) return true;
+  return false;
+}
