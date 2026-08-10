@@ -26,7 +26,10 @@ export default defineConfig({
     tailwindcss(),
     tsconfigPaths({ projects: ["./tsconfig.json"] }),
     tanstackStart({
-      server: { entry: "server" },
+      server: {
+        entry: "server",
+        preset: process.env.VERCEL ? "vercel" : "node",
+      },
       importProtection: {
         behavior: "error",
         client: {
