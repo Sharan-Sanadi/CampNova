@@ -30,6 +30,7 @@ import { datasetsRoutes } from "./modules/datasets/dataset.routes.js";
 import { intelligenceRoutes } from "./modules/intelligence/intelligence.routes.js";
 import { notificationsRoutes } from "./modules/notifications/notifications.routes.js";
 import { resourcesRoutes } from "./modules/resources/resources.routes.js";
+import { settingsRoutes } from "./modules/settings/settings.routes.js";
 import { registerRealtime } from "./modules/realtime/realtime.gateway.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -96,6 +97,7 @@ export async function buildApp(): Promise<FastifyInstance> {
       await api.register(intelligenceRoutes);
       await api.register(notificationsRoutes);
       await api.register(copilotRoutes);
+      await api.register(settingsRoutes);
     },
     { prefix: "/api/v1" },
   );

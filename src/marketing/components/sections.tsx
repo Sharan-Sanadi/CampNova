@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useAuth } from "@clerk/react";
 import { ArrowRight, Brain, CalendarRange, Layers, LineChart, ShieldCheck, Zap } from "lucide-react";
 import { Button } from "@/common/components/button";
 import { Panel, StatusPill } from "@/shared/primitives";
@@ -6,6 +7,7 @@ import { Panel, StatusPill } from "@/shared/primitives";
 /* ------------------------------- Hero ---------------------------------- */
 
 export function Hero() {
+  const { isSignedIn } = useAuth();
   return (
     <section className="border-border matte relative border-b">
       <div className="grid-fade pointer-events-none absolute inset-0 -z-10" aria-hidden />
@@ -23,13 +25,15 @@ export function Hero() {
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <Button asChild>
-                <Link to="/copilot">
-                  Meet the Copilot
+                <Link to={isSignedIn ? "/dashboard" : "/login"}>
+                  {isSignedIn ? "Open Command Center" : "Get started"}
                   <ArrowRight className="size-4" aria-hidden />
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/dashboard">Open CampusOS</Link>
+                <Link to={isSignedIn ? "/dashboard" : "/login"}>
+                  {isSignedIn ? "Open CampusOS" : "Sign in"}
+                </Link>
               </Button>
               <a
                 href="/#platform"

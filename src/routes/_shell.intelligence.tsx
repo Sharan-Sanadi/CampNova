@@ -173,14 +173,16 @@ function IntelligencePage() {
       </div>
 
       {/* DEMO MOMENT — featured prediction */}
-      <section aria-label="Headline prediction" className="mb-8">
-        <SectionHeading
-          label="What's next"
-          title="CampusOS detected increased scheduling pressure tomorrow"
-          action={<StatusPill tone="critical">Priority</StatusPill>}
-        />
-        <PredictionCard prediction={featured} featured />
-      </section>
+      {featured ? (
+        <section aria-label="Headline prediction" className="mb-8">
+          <SectionHeading
+            label="What's next"
+            title="CampusOS detected increased scheduling pressure tomorrow"
+            action={<StatusPill tone="critical">Priority</StatusPill>}
+          />
+          <PredictionCard prediction={featured} featured />
+        </section>
+      ) : null}
 
       <div className="mb-8">
         <CampusPulseChart points={getCampusPulse()} />
@@ -207,16 +209,15 @@ function IntelligencePage() {
           <section aria-label="Predictive operations">
             <SectionHeading label="Predict" title="Predictive operations" />
             <div className="space-y-3">
-              {predictions.map((p, i) => (
-                <PredictionCard key={p.id} prediction={p} index={i} />
-              ))}
-            </div>
-            <div className="mt-3">
-              <IntelAlert>
-                Predictions are deterministic demo intelligence generated inside CampusOS. They are
-                not live model output — the intelligence service boundary is ready for a real AI
-                backend.
-              </IntelAlert>
+              {predictions.length ? (
+                predictions.map((p, i) => (
+                  <PredictionCard key={p.id} prediction={p} index={i} />
+                ))
+              ) : (
+                <Panel className="px-5 py-8 text-center">
+                  <p className="text-meta">Not enough operational history for reliable forecasting yet.</p>
+                </Panel>
+              )}
             </div>
           </section>
 

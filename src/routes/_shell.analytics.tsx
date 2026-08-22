@@ -19,12 +19,15 @@ import {
   SectionHeading,
   UtilizationBar,
 } from "@/shared/primitives";
+import { useCampusVersion } from "@/common/lib/useCampus";
 import {
-  conflictSeries,
-  getResources,
-  peakDemandSeries,
-  utilizationSeries,
-} from "@/data/campus";
+  getAnalyticsSummary,
+  getUtilizationSeries,
+  getPeakDemandSeries,
+  getConflictSeries,
+  getAnalyticsObservations,
+  getResourcePerformanceRanking,
+} from "@/data/analytics";
 
 export const Route = createFileRoute("/_shell/analytics")({
   head: () => ({
@@ -80,21 +83,28 @@ function Observation({ text }: { text: string }) {
 }
 
 function AnalyticsPage() {
-  const resources = [...getResources()].sort((a, b) => b.utilization - a.utilization).slice(0, 6);
+  useCampusVersion();
+
+  const summary = getAnalyticsSummary();
+  const utilizationSeries = getUtilizationSeries();
+  const peakDemandSeries = getPeakDemandSeries();
+  const conflictSeries = getConflictSeries();
+  const observations = getAnalyticsObservations();
+  const resources = getResourcePerformanceRanking().slice(0, 6);
 
   return (
     <div>
       <PageHeader
         eyebrow="Analytics"
         title="Campus performance"
-        subtitle="Six metrics that actually change decisions — each with the reasoning attached."
+        subtitle="Six metrics that actionably drive operations — each grounded in real campus data."
       />
 
       <div className="grid gap-3 sm:grid-cols-3">
         {[
-          ["Resource utilization", "72%", "+4.2% this week"],
-          ["Bookings this week", "280", "+9.1% vs last week"],
-          ["Conflict rate", "3.1%", "-0.8% this week"],
+          ["Resource utilization", summary.utilization, summary.utilizationDelta],
+          ["Bookings this week", String(summary.bookingsThisWeek), summary.bookingsDelta],
+          ["Conflict rate", summary.conflictRate, summary.conflictDelta],
         ].map(([label, value, delta]) => (
           <Panel key={label} className="p-5">
             <p className="text-label text-muted-foreground">{label}</p>
@@ -134,7 +144,7 @@ function AnalyticsPage() {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-            <Observation text="Midweek carries the load: Wednesday peaks at 74% while the weekend drops below 40%. Shifting flexible sessions to Friday would flatten the curve." />
+            <Observation text={observations.utilizationText} />
           </Panel>
         </section>
 
@@ -152,7 +162,7 @@ function AnalyticsPage() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <Observation text="Demand concentrates between 14:00 and 17:00. Labs carry the highest scheduling pressure in that window." />
+            <Observation text={observations.peakDemandText} />
           </Panel>
         </section>
 
@@ -177,7 +187,7 @@ function AnalyticsPage() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <Observation text="Booking volume is up 9.1% week over week, driven almost entirely by student club activity." />
+            <Observation text={observations.bookingTrendsText} />
           </Panel>
         </section>
 
@@ -196,7 +206,7 @@ function AnalyticsPage() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <Observation text="Resolution now keeps pace with detection. Average time-to-resolution fell to 42 minutes after AI recommendations were enabled." />
+            <Observation text={observations.conflictTrendsText} />
           </Panel>
         </section>
       </div>
@@ -204,21 +214,27 @@ function AnalyticsPage() {
       <section aria-label="Resource performance" className="mt-6">
         <SectionHeading label="Ranking" title="Resource performance" />
         <Panel className="divide-border divide-y">
-          {resources.map((r) => (
-            <div
-              key={r.id}
-              className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-3.5 sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto]"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-[13px] font-medium">{r.name}</p>
-                <p className="text-meta truncate">{r.building}</p>
+          {resources.length ? (
+            resources.map((r) => (
+              <div
+                key={r.id}
+                className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-3.5 sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto]"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-[13px] font-medium">{r.name}</p>
+                  <p className="text-meta truncate">{r.building}</p>
+                </div>
+                <div className="hidden sm:block">
+                  <UtilizationBar value={r.utilization} />
+                </div>
+                <span className="text-sm font-medium tnum">{r.utilization}%</span>
               </div>
-              <div className="hidden sm:block">
-                <UtilizationBar value={r.utilization} />
-              </div>
-              <span className="text-sm font-medium tnum">{r.utilization}%</span>
+            ))
+          ) : (
+            <div className="px-5 py-8 text-center">
+              <p className="text-meta">No resource inventory created yet.</p>
             </div>
-          ))}
+          )}
         </Panel>
       </section>
     </div>

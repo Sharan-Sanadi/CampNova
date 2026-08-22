@@ -440,3 +440,91 @@
     opacity: 0;
   }
 }
+
+/* ── Clerk Integration Overrides — seamless match to CampusOS ── */
+.cl-rootBox {
+  width: 100% !important;
+}
+.cl-cardBox,
+.cl-card {
+  background-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+.cl-headerTitle,
+.cl-headerSubtitle,
+.cl-header {
+  display: none !important;
+}
+.cl-socialButtonsBlockButton {
+  background-color: var(--color-surface-2) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-foreground) !important;
+  border-radius: var(--radius-md) !important;
+  transition: all 0.15s ease !important;
+}
+.cl-socialButtonsBlockButton:hover {
+  background-color: var(--color-accent) !important;
+  border-color: var(--color-border-strong) !important;
+}
+.cl-socialButtonsBlockButtonText {
+  color: var(--color-foreground) !important;
+  font-weight: 500 !important;
+  font-size: 0.75rem !important;
+}
+.cl-dividerLine {
+  background-color: var(--color-border) !important;
+}
+.cl-dividerText {
+  color: var(--color-muted-foreground) !important;
+  font-size: 0.7rem !important;
+}
+.cl-formFieldLabel {
+  color: var(--color-foreground) !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+}
+.cl-formFieldInput {
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-foreground) !important;
+  border-radius: var(--radius-md) !important;
+  font-size: 0.8125rem !important;
+  transition: border-color 0.15s ease !important;
+}
+.cl-formFieldInput:focus {
+  border-color: var(--color-primary) !important;
+  outline: none !important;
+}
+.cl-formButtonPrimary {
+  background-color: var(--color-primary) !important;
+  color: var(--color-primary-foreground) !important;
+  border-radius: var(--radius-md) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  transition: opacity 0.15s ease !important;
+}
+.cl-formButtonPrimary:hover {
+  opacity: 0.9 !important;
+}
+.cl-footer {
+  background: transparent !important;
+  border-top: 1px solid var(--color-border) !important;
+  padding-top: 1rem !important;
+  margin-top: 1rem !important;
+}
+.cl-footerActionText {
+  color: var(--color-muted-foreground) !important;
+  font-size: 0.75rem !important;
+}
+.cl-footerActionLink {
+  color: var(--color-primary) !important;
+  font-weight: 500 !important;
+}
+

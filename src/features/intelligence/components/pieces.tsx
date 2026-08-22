@@ -79,6 +79,12 @@ const pulseTone = (level: PulsePoint["level"]) =>
   level === "High" ? "bg-warning" : level === "Moderate" ? "bg-primary" : "bg-primary/45";
 
 export function CampusPulseChart({ points }: { points: PulsePoint[] }) {
+  const maxPoint = points.reduce(
+    (max, p) => (p.value > (max?.value ?? -1) ? p : max),
+    null as PulsePoint | null,
+  );
+  const hasPeak = maxPoint && maxPoint.value > 0;
+
   return (
     <Panel className="p-5">
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
@@ -86,7 +92,11 @@ export function CampusPulseChart({ points }: { points: PulsePoint[] }) {
           <p className="text-label text-muted-foreground">Campus pulse</p>
           <p className="mt-1 text-sm">How active the campus is across the day</p>
         </div>
-        <StatusPill tone="warning">Peak 14:00</StatusPill>
+        {hasPeak ? (
+          <StatusPill tone="warning">Peak {maxPoint.time}</StatusPill>
+        ) : (
+          <StatusPill tone="info">No peak demand yet</StatusPill>
+        )}
       </div>
       <div className="flex items-end gap-2 sm:gap-3">
         {points.map((p, i) => (

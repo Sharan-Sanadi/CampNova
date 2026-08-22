@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
   GitCompare,
+  Plus,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -30,6 +31,7 @@ import {
   SelectValue,
 } from "@/common/components/select";
 import { ResourceResultCard } from "@/features/resources/components/ResourceResultCard";
+import { CreateResourceModal } from "@/features/resources/components/CreateResourceModal";
 import { AskCampusOS, MatchReasons, MatchScore } from "@/features/resources/components/intelligence";
 import { ReserveDialog } from "@/features/resources/components/ReserveDialog";
 import {
@@ -44,6 +46,7 @@ import {
   type ResourceProfile,
 } from "@/data/resources";
 import type { ResourceType } from "@/data/campus";
+import { useCampusVersion } from "@/common/lib/useCampus";
 
 export const Route = createFileRoute("/_shell/resources/")({
   head: () => ({
@@ -77,6 +80,7 @@ const sortLabels: Record<SortKey, string> = {
 };
 
 function ResourcesPage() {
+  const campusVersion = useCampusVersion();
   const navigate = useNavigate();
   const [text, setText] = useState("");
   const [submitted, setSubmitted] = useState("");
@@ -91,6 +95,7 @@ function ResourcesPage() {
   const [sort, setSort] = useState<SortKey>("match");
   const [compare, setCompare] = useState<string[]>([]);
   const [reserveFor, setReserveFor] = useState<ResourceProfile | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const fleet = resourceFleetSummary();
   const categories = resourceCategories();
@@ -113,7 +118,7 @@ function ResourcesPage() {
       accessible: query.accessible || accessibleOnly,
     };
     return matchResources(merged);
-  }, [query, minCapacity, equipment, types, accessibleOnly]);
+  }, [query, minCapacity, equipment, types, accessibleOnly, campusVersion]);
 
   const results = useMemo(() => {
     const words = submitted.toLowerCase();
@@ -198,9 +203,15 @@ function ResourcesPage() {
         title="Resources"
         subtitle="Find the right space, facility or equipment for what you need — with availability, utilization and demand explained."
         actions={
-          <AskCampusOS prompt="Find me a 60-seat lab tomorrow from 2–4 PM with a projector.">
-            Ask CampusOS
-          </AskCampusOS>
+          <div className="flex items-center gap-2">
+            <Button onClick={() => setCreateOpen(true)} className="gap-1.5">
+              <Plus className="size-4" />
+              Configure Resource
+            </Button>
+            <AskCampusOS prompt="Find me a 60-seat lab tomorrow from 2–4 PM with a projector.">
+              Ask CampusOS
+            </AskCampusOS>
+          </div>
         }
       />
 
@@ -603,6 +614,11 @@ function ResourcesPage() {
           onOpenChange={(v) => !v && setReserveFor(null)}
         />
       ) : null}
+
+      <CreateResourceModal
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+      />
     </div>
   );
 }

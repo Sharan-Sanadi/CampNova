@@ -42,6 +42,11 @@ Designed with **enterprise SaaS aesthetics**, **Microsoft-level modular architec
 - **Proactive Anomaly Alerts**: AI-generated alerts highlighting unusual cancellation patterns and unbooked seat-hours.
 - **Capacity Rebalancing**: Recommends shifting low-priority sessions from oversubscribed blocks to open wings.
 
+### 🔐 6. Production Clerk Auth & MongoDB Datastore (`/login`, `/auth`)
+- **Clerk Identity Provider**: Dual OAuth (Google) and Email + Password authentication flows with unified dark SaaS theme integration.
+- **Persistent MongoDB Store**: Server-side MongoDB connection pooling (`MONGO_URI`) linking Clerk identities to persistent user profiles, resources, bookings, approvals, notifications, activity, and settings.
+- **Zero Dummy Data Guarantee**: All operational metrics, charts, intelligence signals, and copilot tools query live MongoDB database state.
+
 ---
 
 ## 🎨 3D Spatial Interface Architecture
@@ -60,7 +65,10 @@ CampusOS AI features a custom **Three.js / React Three Fiber spatial layer** mou
 | Layer | Technology | Rationale / Key Advantage |
 |-------|------------|---------------------------|
 | **Framework** | **TanStack Start (Vite 8)** | SSR-ready, type-safe file routing, and zero-waterfall data loading |
-| **Language** | **TypeScript 5.8 (Strict)** | End-to-end type safety across route context, mock schemas, and components |
+| **Authentication** | **Clerk (@clerk/react)** | Production identity management, Google OAuth & Email/Password session security |
+| **Database** | **MongoDB + Mongoose 8** | Server-side persistent document store with connection pooling & `clerkUserId` indexing |
+| **Backend API** | **Node.js + Fastify 5** | High-throughput REST API with Clerk middleware validation & RBAC authorization |
+| **Language** | **TypeScript 5.8 (Strict)** | End-to-end type safety across route context, schemas, API endpoints, and components |
 | **Architecture** | **Microsoft-level Feature Modules** | Clear separation of concerns, barrel exports, shared common infrastructure |
 | **UI & Styling** | **TailwindCSS v4 + Radix UI** | High-density enterprise SaaS layout tokens with full dark-mode optimization |
 | **3D & Visuals** | **Three.js + R3F + GSAP** | High-performance GPU particle fields and smooth camera rigs |

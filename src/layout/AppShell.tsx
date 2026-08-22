@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useUser, useClerk } from "@clerk/react";
 import {
   Activity,
   BarChart3,
@@ -24,7 +25,16 @@ import {
   DropdownMenuTrigger,
 } from "@/common/components/dropdown-menu";
 import { cn } from "@/common/lib/utils";
-import { campusHealth, currentUser, getBookings, getNotifications } from "@/data/campus";
+import {
+  campusHealth,
+  currentSettings,
+  currentUser,
+  getBookings,
+  getNotifications,
+  getPendingApprovals,
+} from "@/data/campus";
+import { syncClerkUser, resetAuthUser } from "@/data/auth";
+import { resourceFleetSummary } from "@/data/resources";
 import { CommandPalette } from "./CommandPalette";
 import { StatusDot } from "@/shared/primitives";
 import { ThemeToggle } from "./ThemeToggle";
@@ -144,7 +154,16 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 
 
 function CampusPulse() {
-  const active = getBookings().filter((b) => b.status === "approved").length;
+  const bookings = getBookings();
+  const active = bookings.filter((b) => b.status === "approved" || b.status === "confirmed").length;
+  const pending = getPendingApprovals().length;
+  const conflicts = bookings.filter((b) => b.status === "conflict").length;
+  const fleet = resourceFleetSummary();
+  const util = fleet.avgUtilization;
+
+  const healthStatus = conflicts === 0 ? "Healthy" : conflicts <= 2 ? "Attention" : "Degraded";
+  const healthTone = healthStatus === "Healthy" ? "success" : healthStatus === "Attention" ? "warning" : "critical";
+
   return (
     <section
       aria-label="Campus pulse"
@@ -152,19 +171,26 @@ function CampusPulse() {
     >
       <div className="mb-1.5 flex items-center justify-between gap-2">
         <p className="text-label text-muted-foreground/70">Campus Pulse</p>
-        <span className="text-success inline-flex items-center gap-1 text-[10px] font-medium">
-          <StatusDot tone="success" pulse />
-          Healthy
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 text-[10px] font-medium",
+            healthTone === "success" && "text-success",
+            healthTone === "warning" && "text-warning",
+            healthTone === "critical" && "text-destructive",
+          )}
+        >
+          <StatusDot tone={healthTone} pulse />
+          {healthStatus}
         </span>
       </div>
       <div className="flex items-baseline justify-between gap-2">
-        <span className="tnum text-base font-medium tracking-tight">{campusHealth.utilization}%</span>
+        <span className="tnum text-base font-medium tracking-tight">{util}%</span>
         <span className="text-muted-foreground text-[11px]">utilization</span>
       </div>
       <div className="bg-surface-2 mt-1 h-[3px] w-full overflow-hidden rounded-full">
         <div
           className="bg-primary h-full rounded-full transition-all duration-500"
-          style={{ width: `${campusHealth.utilization}%` }}
+          style={{ width: `${util}%` }}
         />
       </div>
       <dl className="text-muted-foreground mt-1.5 flex items-center justify-between text-[11px]">
@@ -174,7 +200,7 @@ function CampusPulse() {
         </div>
         <div className="flex items-center gap-1.5">
           <dt>Pending</dt>
-          <dd className="text-foreground tnum font-medium">{campusHealth.pendingActions}</dd>
+          <dd className="text-foreground tnum font-medium">{pending}</dd>
         </div>
       </dl>
     </section>
@@ -182,22 +208,40 @@ function CampusPulse() {
 }
 
 function UserCard() {
+  const { isLoaded, isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn && user) {
+      syncClerkUser(user);
+    } else if (isLoaded && !isSignedIn) {
+      resetAuthUser();
+    }
+  }, [isLoaded, isSignedIn, user]);
+
+  const handleSignOut = async () => {
+    resetAuthUser();
+    await signOut();
+    navigate({ to: "/login" });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="border-border hover:bg-sidebar-accent flex w-full items-center gap-2.5 rounded-md border px-2 py-1.5 text-left transition-colors">
         <span className="bg-primary-soft text-primary grid size-7 shrink-0 place-items-center rounded-md text-[11px] font-semibold">
-          {currentUser.initials}
+          {currentUser.initials || "??"}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[13px] font-medium">{currentUser.name}</span>
+          <span className="block truncate text-[13px] font-medium">{currentUser.name || "Authenticated User"}</span>
           <span className="text-muted-foreground block truncate text-[11px]">
-            {currentUser.role} · {currentUser.campus}
+            {currentUser.role || "Member"} · {currentSettings.campus}
           </span>
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
         <DropdownMenuLabel className="text-muted-foreground text-xs font-normal">
-          {currentUser.email}
+          {currentUser.email || "User Account"}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
@@ -207,8 +251,11 @@ function UserCard() {
           <Link to="/settings">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to="/login">Sign out</Link>
+        <DropdownMenuItem
+          className="text-destructive focus:text-destructive cursor-pointer"
+          onClick={handleSignOut}
+        >
+          Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -308,9 +355,9 @@ export function AppShell() {
             <span className="border-border text-muted-foreground hidden items-center gap-1.5 rounded-md border px-2 py-1.5 text-[11px] tracking-wide lg:inline-flex">
               <StatusDot tone="success" pulse />
               <span className="sr-only">Campus status: </span>
-              {currentUser.campus}
+              {currentSettings.campus}
             </span>
-            <CampusClock className="hidden md:block" label={currentUser.campus.split(" ")[0]} />
+            <CampusClock className="hidden md:block" label={currentSettings.campus.split(" ")[0]} />
 
 
           </div>

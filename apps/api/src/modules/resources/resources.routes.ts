@@ -5,6 +5,7 @@ import { ResourceQuerySchema } from "@campus-os/shared-types";
 import { notFound } from "../../shared/errors/AppError.js";
 import { requireAuth } from "../../shared/middleware/auth.js";
 import {
+  createResource,
   findResourceAlternatives,
   getAvailability,
   getResourceProfile,
@@ -14,9 +15,29 @@ import {
   matchResources,
 } from "./resource.service.js";
 
+const createResourceSchema = z.object({
+  name: z.string().min(1),
+  type: z.string().min(1),
+  building: z.string().min(1),
+  floor: z.string().min(1),
+  capacity: z.coerce.number().int().positive(),
+  description: z.string().min(1),
+  amenities: z.array(z.string()).optional(),
+  equipment: z.array(z.string()).optional(),
+});
+
 export async function resourcesRoutes(app: FastifyInstance) {
   app.get("/resources", { preHandler: requireAuth, schema: { tags: ["Resources"] } }, async (request) =>
     listResources(request.user!.campusId),
+  );
+
+  app.post(
+    "/resources",
+    { preHandler: requireAuth, schema: { tags: ["Resources"], body: createResourceSchema } },
+    async (request) => {
+      const body = createResourceSchema.parse(request.body);
+      return createResource(body as Parameters<typeof createResource>[0], request.user!);
+    },
   );
 
   app.get(

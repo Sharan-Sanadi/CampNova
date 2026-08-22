@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useAuth } from "@clerk/react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/common/components/button";
 import { ThemeToggle } from "@/layout/ThemeToggle";
@@ -27,6 +28,7 @@ export function SiteBrand() {
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const { isSignedIn } = useAuth();
 
   return (
     <header className="bg-background/85 border-border sticky top-0 z-40 border-b backdrop-blur-md">
@@ -47,12 +49,20 @@ export function SiteHeader() {
 
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
-          <Button asChild size="sm" variant="ghost" className="hidden sm:inline-flex">
-            <Link to="/login">Sign in</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link to="/dashboard">Open CampusOS</Link>
-          </Button>
+          {!isSignedIn ? (
+            <>
+              <Button asChild size="sm" variant="ghost" className="hidden sm:inline-flex">
+                <Link to="/login">Sign in</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link to="/login">Get started</Link>
+              </Button>
+            </>
+          ) : (
+            <Button asChild size="sm">
+              <Link to="/dashboard">Open CampusOS</Link>
+            </Button>
+          )}
           <button
             type="button"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -77,9 +87,15 @@ export function SiteHeader() {
                 {s.label}
               </a>
             ))}
-            <Link to="/login" onClick={() => setOpen(false)} className="py-2 text-sm">
-              Sign in
-            </Link>
+            {!isSignedIn ? (
+              <Link to="/login" onClick={() => setOpen(false)} className="py-2 text-sm">
+                Sign in
+              </Link>
+            ) : (
+              <Link to="/dashboard" onClick={() => setOpen(false)} className="py-2 text-sm font-medium text-primary">
+                Open CampusOS
+              </Link>
+            )}
           </nav>
         </div>
       ) : null}

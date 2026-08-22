@@ -272,7 +272,7 @@ function buildProfile(r: Resource): ResourceProfile {
   };
 }
 
-const PROFILES: ResourceProfile[] = getResources().map(buildProfile);
+// PROFILES are computed dynamically from getResources() via getResourceProfiles()
 
 /* ------------------------------------------------------------------ */
 /* AVAILABILITY                                                        */
@@ -675,10 +675,11 @@ export function scoreResource(p: ResourceProfile, query: ResourceQuery): MatchRe
 /* SERVICE LAYER — replace these bodies with real API calls            */
 /* ------------------------------------------------------------------ */
 
-export const getResourceProfiles = (): ResourceProfile[] => PROFILES;
+export const getResourceProfiles = (): ResourceProfile[] =>
+  getResources().map(buildProfile);
 
 export const getResourceProfile = (id: string): ResourceProfile | undefined =>
-  PROFILES.find((p) => p.id === id);
+  getResourceProfiles().find((p) => p.id === id);
 
 export const getAvailability = (resourceId: string, dayIndex = 0): AvailabilitySlot[] => {
   const p = getResourceProfile(resourceId);
@@ -694,7 +695,7 @@ export const getResourceBookings = (resourceId: string): Booking[] =>
   getBookingsForResource(resourceId);
 
 export const matchResources = (query: ResourceQuery): MatchResult[] =>
-  PROFILES.map((p) => scoreResource(p, query)).sort((a, b) => b.score - a.score);
+  getResourceProfiles().map((p) => scoreResource(p, query)).sort((a, b) => b.score - a.score);
 
 export const findAlternatives = (resourceId: string, limit = 3): MatchResult[] => {
   const target = getResourceProfile(resourceId);
@@ -709,7 +710,8 @@ export const findAlternatives = (resourceId: string, limit = 3): MatchResult[] =
     end: null,
     accessible: false,
   };
-  return PROFILES.filter((p) => p.id !== resourceId && p.status !== "maintenance")
+  return getResourceProfiles()
+    .filter((p) => p.id !== resourceId && p.status !== "maintenance")
     .map((p) => scoreResource(p, query))
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);
@@ -739,20 +741,23 @@ export const alternativeRationale = (target: ResourceProfile, alt: ResourceProfi
 };
 
 export const resourceCategories = (): { type: ResourceType; count: number }[] => {
+  const profiles = getResourceProfiles();
   const map = new Map<ResourceType, number>();
-  for (const p of PROFILES) map.set(p.type, (map.get(p.type) ?? 0) + 1);
+  for (const p of profiles) map.set(p.type, (map.get(p.type) ?? 0) + 1);
   return [...map.entries()].map(([type, count]) => ({ type, count }));
 };
 
-export const buildings = (): string[] => [...new Set(PROFILES.map((p) => p.building))].sort();
+export const buildings = (): string[] =>
+  [...new Set(getResourceProfiles().map((p) => p.building))].sort();
 
 export const resourceFleetSummary = () => {
-  const total = PROFILES.length;
-  const availableNow = PROFILES.filter((p) => p.status === "available").length;
+  const profiles = getResourceProfiles();
+  const total = profiles.length;
+  const availableNow = profiles.filter((p) => p.status === "available").length;
   const avgUtilization = Math.round(
-    PROFILES.reduce((sum, p) => sum + p.utilization, 0) / Math.max(total, 1),
+    profiles.reduce((sum, p) => sum + p.utilization, 0) / Math.max(total, 1),
   );
-  const pressured = PROFILES.filter(
+  const pressured = profiles.filter(
     (p) => p.bookingPressure === "High" || p.bookingPressure === "Elevated",
   ).length;
   const upcoming = getBookings().filter(

@@ -1,10 +1,19 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/common/components/button";
 import { Input } from "@/common/components/input";
 import { Label } from "@/common/components/label";
 import { toast } from "sonner";
 import { PageHeader, Panel, SectionHeading, Tag } from "@/shared/primitives";
-import { currentUser, getBookings } from "@/data/campus";
+import {
+  currentUser,
+  getBookings,
+  updateUser,
+  pushActivityEvent,
+  pushNotification,
+} from "@/data/campus";
+import { fetchApi } from "@/common/lib/apiClient";
+import { useCampusVersion } from "@/common/lib/useCampus";
 
 export const Route = createFileRoute("/_shell/profile")({
   head: () => ({
@@ -22,6 +31,55 @@ export const Route = createFileRoute("/_shell/profile")({
 });
 
 function ProfilePage() {
+  useCampusVersion();
+
+  const [name, setName] = useState(currentUser.name);
+  const [role, setRole] = useState(currentUser.role);
+  const [email, setEmail] = useState(currentUser.email);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setName(currentUser.name);
+    setRole(currentUser.role);
+    setEmail(currentUser.email);
+  }, [currentUser.name, currentUser.role, currentUser.email]);
+
+  const handleSaveProfile = async () => {
+    setSaving(true);
+    const updated = updateUser({ name, role, email });
+
+    pushActivityEvent({
+      id: `act-prof-${Date.now()}`,
+      kind: "ai",
+      message: `Updated profile details for ${updated.name}`,
+      detail: `Role: ${updated.role}, Email: ${updated.email}`,
+      time: "Just now",
+    });
+
+    pushNotification({
+      id: `notif-prof-${Date.now()}`,
+      category: "System",
+      title: "Profile Updated",
+      body: `Your profile details were updated successfully: ${updated.name} (${updated.role}).`,
+      time: "Just now",
+      unread: true,
+      actionLabel: "View profile",
+      actionTo: "/profile",
+    });
+
+    try {
+      await fetchApi("/profile", {
+        method: "PATCH",
+        body: JSON.stringify({ name: updated.name, role: updated.role, email: updated.email }),
+      });
+    } catch {
+      // Standalone mode fallback
+    }
+
+    setSaving(false);
+    toast.success(`Profile saved. Updated user: ${updated.name}`);
+  };
+
   const recent = getBookings().slice(0, 4);
 
   return (
@@ -45,22 +103,43 @@ function ProfilePage() {
             </div>
           </div>
         </div>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="mt-6 grid gap-4 sm:grid-cols-3">
           <div>
             <Label htmlFor="name" className="text-xs">
               Full name
             </Label>
-            <Input id="name" defaultValue={currentUser.name} className="bg-surface-2 mt-1.5" />
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="bg-surface-2 mt-1.5"
+            />
+          </div>
+          <div>
+            <Label htmlFor="role" className="text-xs">
+              Role
+            </Label>
+            <Input
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="bg-surface-2 mt-1.5"
+            />
           </div>
           <div>
             <Label htmlFor="email" className="text-xs">
               Email
             </Label>
-            <Input id="email" defaultValue={currentUser.email} className="bg-surface-2 mt-1.5" />
+            <Input
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-surface-2 mt-1.5"
+            />
           </div>
         </div>
-        <Button className="mt-5" size="sm" onClick={() => toast.success("Profile updated")}>
-          Save profile
+        <Button className="mt-5" size="sm" disabled={saving} onClick={handleSaveProfile}>
+          {saving ? "Saving..." : "Save profile"}
         </Button>
       </Panel>
 

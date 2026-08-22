@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_site/contact")({
 
 function ContactPage() {
   const [sent, setSent] = useState(false);
-  const formId = import.meta.env.VITE_FORMSPREE_FORM_ID as string | undefined;
+  const formId = import.meta.env["VITE_FORMSPREE_FORM_ID"] ?? "xeqgkrze";
   const [state, handleSubmit] = useForm(formId ?? "campusos-disabled");
 
   const showSuccess = sent || state.succeeded;

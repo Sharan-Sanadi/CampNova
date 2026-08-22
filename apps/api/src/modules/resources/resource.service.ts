@@ -24,6 +24,65 @@ export async function listResourceProfiles(campusId: string): Promise<ResourcePr
   return resources.map(toResourceProfileDto);
 }
 
+export async function createResource(data: {
+  name: string;
+  type: string;
+  building: string;
+  floor: string;
+  capacity: number;
+  description: string;
+  amenities?: string[] | undefined;
+  equipment?: string[] | undefined;
+}, user: { campusId: string; mongoId: string }) {
+  const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const externalId = `${slug}-${Date.now().toString(36)}`;
+  
+  const created = await Resource.create({
+    externalId,
+    campusId: user.campusId,
+    name: data.name,
+    type: data.type,
+    building: data.building,
+    buildingId: "000000000000000000000000", // fallback mongo id for building
+    floor: data.floor,
+    capacity: data.capacity,
+    amenities: data.amenities ?? [],
+    equipment: data.equipment ?? [],
+    status: "available",
+    utilization: 0,
+    nextBooking: null,
+    trend: [0, 0, 0, 0, 0, 0, 0],
+    description: data.description,
+    accessibility: {
+      wheelchair: true,
+      hearingLoop: false,
+      stepFreeRoute: true,
+      note: "Standard accessibility",
+    },
+    walkMinutes: 5,
+    bookingPressure: "Low",
+    conflictRate: 0,
+    cancellationRate: 0,
+    upcomingBookings: 0,
+    maintenance: "Normal",
+    healthScore: 100,
+    trendDelta: 0,
+    peakWindow: "14:00-16:00",
+    lowWindow: "08:00-10:00",
+    demandByDay: [],
+    demandByPart: [],
+    predictedDemand: {
+      window: "14:00-16:00",
+      level: "Low",
+      note: "Normal capacity",
+    },
+    dataMode: dataModeFilter(),
+    isDemo: false,
+  });
+
+  return toResourceProfileDto(created.toObject());
+}
+
 export async function getResourceProfile(id: string, campusId?: string): Promise<ResourceProfile | undefined> {
   const resource = await Resource.findOne({
     externalId: id,

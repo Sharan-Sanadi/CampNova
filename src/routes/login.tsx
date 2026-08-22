@@ -22,13 +22,24 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const navigate = useNavigate();
   const { isLoaded, isSignedIn } = useAuth();
-  const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
+  const clerkPublishableKey = import.meta.env["VITE_CLERK_PUBLISHABLE_KEY"] as string | undefined;
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/dashboard", replace: true });
     }
   }, [isLoaded, isSignedIn, navigate]);
+
+  if (!isLoaded) {
+    return (
+      <div className="bg-background flex min-h-dvh flex-col items-center justify-center gap-3">
+        <div className="border-primary/20 border-t-primary size-8 animate-spin rounded-full border-2" />
+        <p className="text-muted-foreground text-xs font-medium tracking-wide">
+          Loading authentication portal…
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="relative grid min-h-dvh lg:grid-cols-2">
@@ -59,29 +70,72 @@ function LoginPage() {
           </div>
         </div>
         <p className="text-muted-foreground/60 text-[11px]">
-          Northgate Campus · 34 bookable resources · 148 active bookings
+          Secure Campus Operations Workspace · Production Auth Enabled
         </p>
       </div>
 
       <div className="relative flex items-center justify-center px-5 py-16">
-        <Panel className="w-full max-w-sm p-7">
-          <h2 className="text-lg font-medium tracking-tight">Sign in to CampusOS</h2>
-          <p className="text-meta mt-1.5">Use your campus credentials to continue.</p>
-          <div className="mt-6">
+        <Panel className="w-full max-w-md p-7 sm:p-8">
+          <div className="mb-6 flex items-center gap-3">
+            <span
+              aria-hidden
+              className="border-border bg-surface-2 grid size-9 shrink-0 place-items-center rounded-lg border"
+            >
+              <span className="bg-primary size-2.5 rounded-[3px]" />
+            </span>
+            <div>
+              <h2 className="text-lg font-semibold tracking-tight text-foreground">Sign in to CampusOS</h2>
+              <p className="text-muted-foreground mt-0.5 text-xs">Use Google or your campus credentials.</p>
+            </div>
+          </div>
+          <div>
             {clerkPublishableKey ? (
-              <SignIn routing="path" path="/login" signUpUrl="/login" fallbackRedirectUrl="/dashboard" />
+              <SignIn
+                routing="path"
+                path="/login"
+                signUpUrl="/login"
+                fallbackRedirectUrl="/dashboard"
+                forceRedirectUrl="/dashboard"
+                appearance={{
+                  elements: {
+                    rootBox: "w-full",
+                    cardBox: "!bg-transparent !shadow-none !border-0 !p-0 !m-0 w-full max-w-none",
+                    card: "!bg-transparent !shadow-none !border-0 !p-0 !m-0 w-full max-w-none",
+                    header: "hidden",
+                    headerTitle: "hidden",
+                    headerSubtitle: "hidden",
+                    socialButtonsBlockButton:
+                      "!border !border-border !bg-surface-2 hover:!bg-accent !text-foreground !text-xs !font-medium !h-10 !rounded-md w-full !transition-colors !shadow-none",
+                    socialButtonsBlockButtonText: "!text-foreground !font-medium !text-xs",
+                    dividerLine: "!bg-border !h-px",
+                    dividerText: "!text-muted-foreground !text-[11px] !font-medium",
+                    formFieldLabel: "!text-foreground !text-xs !font-medium !mb-1",
+                    formFieldInput:
+                      "!bg-background !border !border-border !text-foreground !text-xs !rounded-md !h-10 !px-3 w-full focus:!border-primary",
+                    formButtonPrimary:
+                      "!bg-primary hover:!bg-primary/90 !text-primary-foreground !text-xs !font-medium !h-10 !rounded-md w-full !shadow-none !transition-colors",
+                    footerActionText: "!text-muted-foreground !text-xs",
+                    footerActionLink: "!text-primary hover:!underline !text-xs !font-medium",
+                    footer: "!bg-transparent !border-t !border-border !pt-4 !mt-5",
+                  },
+                }}
+              />
             ) : (
-              <Button className="w-full" onClick={() => navigate({ to: "/dashboard" })}>
-                Continue demo
-              </Button>
+              <div className="space-y-3 text-center">
+                <p className="text-destructive text-xs">
+                  VITE_CLERK_PUBLISHABLE_KEY is not configured in environment.
+                </p>
+                <Button className="w-full" onClick={() => navigate({ to: "/dashboard" })}>
+                  Continue to Command Center
+                </Button>
+              </div>
             )}
           </div>
-          <p className="text-meta mt-6">
-            Exploring the demo?{" "}
-            <Link to="/" className="text-primary hover:underline">
-              Enter the command center
+          <div className="border-border mt-6 border-t pt-4 text-center">
+            <Link to="/" className="text-muted-foreground text-xs hover:text-foreground hover:underline">
+              ← Return to landing page
             </Link>
-          </p>
+          </div>
         </Panel>
       </div>
     </div>

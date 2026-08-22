@@ -23,6 +23,7 @@ import {
 } from "./campus";
 import { getResourceProfile, getResourceProfiles, parseResourceQuery } from "./resources";
 import type { ResourceProfile } from "./resources";
+import { fetchApi } from "@/common/lib/apiClient";
 
 /* ------------------------------------------------------------------ */
 /* TYPES — future API contract                                         */
@@ -651,6 +652,24 @@ export function createBooking(
   };
 
   upsertBooking(booking);
+  
+  // Asynchronously sync with backend API
+  fetchApi("/bookings", {
+    method: "POST",
+    body: JSON.stringify({
+      resourceId: request.resourceId,
+      date: request.date,
+      start: request.start,
+      end: request.end,
+      title: request.title,
+      purpose: request.purpose,
+      attendees: request.attendees,
+      equipment: request.equipment,
+      organiser: request.organiser,
+      department: request.department,
+    }),
+  }).catch((err) => console.error("Failed to persist booking to API:", err));
+
   pushActivityEvent({
     id: `AC-${booking.id}`,
     kind: conflicted ? "conflict" : "booking",
@@ -682,6 +701,12 @@ export function updateBooking(id: string, patch: Partial<Booking>): Booking | un
     conflictWith: conflicts.map((c) => c.conflictingBookingId),
     riskLabel: riskFrom(conflicts.length > 1 ? "High" : conflicts.length ? "Medium" : "Low"),
   });
+
+  fetchApi(`/bookings/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(patch),
+  }).catch((err) => console.error("Failed to patch booking to API:", err));
+
   pushActivityEvent({
     id: `AC-${id}-${Date.now()}`,
     kind: conflicts.length ? "conflict" : "booking",
@@ -695,6 +720,10 @@ export function updateBooking(id: string, patch: Partial<Booking>): Booking | un
 export function cancelBooking(id: string): Booking | undefined {
   const next = patchBooking(id, { status: "cancelled", conflictWith: [] });
   if (!next) return undefined;
+
+  fetchApi(`/bookings/${id}`, { method: "DELETE" })
+    .catch((err) => console.error("Failed to cancel booking via API:", err));
+
   pushActivityEvent({
     id: `AC-cancel-${id}-${Date.now()}`,
     kind: "release",
@@ -718,6 +747,18 @@ export function cancelBooking(id: string): Booking | undefined {
 export function decideBooking(id: string, decision: "approved" | "rejected"): Booking | undefined {
   const next = patchBooking(id, { status: decision === "approved" ? "confirmed" : "rejected" });
   if (!next) return undefined;
+
+  fetchApi(`/approvals/${id}/decide`, {
+    method: "POST",
+    body: JSON.stringify({ decision }),
+  }).catch(() => {
+    // Fallback if approval id is custom client id
+    fetchApi(`/bookings/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: decision === "approved" ? "confirmed" : "rejected" }),
+    }).catch((err) => console.error("Failed to decide booking via API:", err));
+  });
+
   pushActivityEvent({
     id: `AC-${decision}-${id}-${Date.now()}`,
     kind: "approval",
