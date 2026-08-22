@@ -51,12 +51,56 @@ export async function buildApp(): Promise<FastifyInstance> {
     credentials: true,
   });
   await app.register(cookie, { secret: env.COOKIE_SECRET });
+
+  // Public Health & Root Probe Endpoints (UNAUTHENTICATED, FAST 200 RESPONSES FOR RENDER HEALTH CHECKS)
+  app.route({
+    method: ["GET", "HEAD"],
+    url: "/",
+    handler: async (_request, reply) => {
+      return reply.status(200).send({
+        status: "ok",
+        service: "CampusOS AI API",
+        version: "0.1.0",
+        timestamp: new Date().toISOString(),
+      });
+    },
+  });
+
+  app.route({
+    method: ["GET", "HEAD"],
+    url: "/health",
+    handler: async (_request, reply) => {
+      return reply.status(200).send({ status: "ok" });
+    },
+  });
+
+  app.route({
+    method: ["GET", "HEAD"],
+    url: "/ping",
+    handler: async (_request, reply) => {
+      return reply.status(200).send("pong");
+    },
+  });
+
+  app.route({
+    method: ["GET", "HEAD"],
+    url: "/ready",
+    handler: async (_request, reply) => {
+      const [mongo, redis] = await Promise.all([isMongoReady(), isRedisReady()]);
+      if (!mongo || !redis) {
+        return reply.status(503).send({ status: "not_ready", checks: { mongo, redis } });
+      }
+      return reply.status(200).send({ status: "ready", checks: { mongo, redis } });
+    },
+  });
+
   if (env.CLERK_SECRET_KEY && env.CLERK_PUBLISHABLE_KEY) {
     await app.register(clerkPlugin as any, {
       secretKey: env.CLERK_SECRET_KEY,
       publishableKey: env.CLERK_PUBLISHABLE_KEY,
     });
   }
+
   await registerRateLimit(app as any);
   await app.register(swagger, {
     openapi: {
@@ -69,15 +113,6 @@ export async function buildApp(): Promise<FastifyInstance> {
     transform: jsonSchemaTransform,
   });
   await app.register(swaggerUi, { routePrefix: "/docs" });
-
-  app.get("/health", async () => ({ status: "ok" }));
-  app.get("/ready", async (_request, reply) => {
-    const [mongo, redis] = await Promise.all([isMongoReady(), isRedisReady()]);
-    if (!mongo || !redis) {
-      return reply.status(503).send({ status: "not_ready", checks: { mongo, redis } });
-    }
-    return { status: "ready", checks: { mongo, redis } };
-  });
 
   app.addHook("preHandler", async (request, reply) => {
     if (request.url.startsWith("/admin/queues")) {
