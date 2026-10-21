@@ -178,7 +178,12 @@ export async function scoreResource(profile: ResourceProfile, query: ResourceQue
   }
 
   if (query.equipment.length) {
-    const missing = query.equipment.filter((item) => !profile.equipment.includes(item));
+    const missing = query.equipment.filter(
+      (item: string) =>
+        !profile.equipment.some((equipmentItem: string) =>
+          equipmentItem.toLowerCase().includes(item.toLowerCase()),
+        ),
+    );
     if (missing.length === 0) {
       score += 16;
       reasons.push({ met: true, label: "All requested equipment present", detail: query.equipment.join(" · ") });
